@@ -58,17 +58,22 @@ for outerRow in range(len(parsedTable)): # ->[1,2,3,4,5,6,7,8,9]<-, [2,1,3,6,5,4
 #endregion
 """
 
-testPuzzle = [
-             [ 5,  3, 'x','x', 7, 'x','x','x','x'], 
-             [ 6, 'x','x', 1,  9,  5, 'x','x','x'],
-             ['x', 9,  8, 'x','x','x','x', 6, 'x'],
-             [ 8, 'x','x','x', 6, 'x','x','x', 3],
-             [ 4, 'x','x', 8, 'x', 3, 'x','x', 1],
-             [ 7, 'x','x','x', 2, 'x','x','x', 6],
-             ['x', 6, 'x','x','x','x', 2,  8, 'x'],
-             ['x','x','x', 4,  1,  9, 'x','x', 5],
-             ['x','x','x','x', 8, 'x','x', 7,  9]
-             ]
+testPuzzle =[
+            ['x', '6', 'x', '1', 'x', '4', 'x', '5', 'x'],
+            ['x', 'x', '8', '3', 'x', '5', '6', 'x', 'x'],
+            ['2', 'x', 'x', 'x', 'x', 'x', 'x', 'x', '1'],
+            ['8', 'x', 'x', '4', 'x', '7', 'x', 'x', '6'],
+            ['x', 'x', '6', 'x', 'x', 'x', '3', 'x', 'x'],
+            ['7', 'x', 'x', '9', 'x', '1', 'x', 'x', '4'],
+            ['5', 'x', 'x', 'x', 'x', 'x', 'x', 'x', '2'],
+            ['x', 'x', '7', '2', 'x', '6', '9', 'x', 'x'],
+            ['x', '4', 'x', '5', 'x', '8', 'x', '7', 'x']
+            ]
+
+for i in range(9):
+    for j in range(9):
+        if testPuzzle[i][j].isdigit():
+            testPuzzle[i][j] = int(testPuzzle[i][j])
 
 # Generate solutions at each box
 '''
@@ -96,6 +101,11 @@ for row in range(9):
 onePossibility = 1 # Tracks cells with only one option, assumes it starts with at least one, doesn't really matter will just waste time if not possible
 iteration = 0
 
+for i in range(9):
+    for j in range(9):
+        if (len(usableNumbers(testPuzzle,i,j)) == 1):
+            print(f"At {i}, {j}")
+            print(usableNumbers(testPuzzle,i,j))
 
 while (onePossibility >= 1):
     print("Iteration[" + str(iteration) + "]: Solving...")
@@ -116,6 +126,34 @@ while (onePossibility >= 1):
                     onePossibility += 1
 
     iteration += 1
+
+# Check completion (maybe we got lucky)
+for i in range(9):
+    vFlag = checkBox(testPuzzle,i+1)
+
+while (vFlag): # Continually solve until vFlag goes down
+    # Guessing becomes necessary here
+    print("Iteration[" + str(iteration) + "]: Solving...")
+    onePossibility = 0
+    # Solve all boxes with only one possibility
+    for row in range(9):
+        for column in range(9):
+            if (len(allSolutions[row][column]) == 2 and testPuzzle[row][column] == 'x'):
+                testPuzzle[row][column] = allSolutions[row][column][0] # add into test puzzle, pick first
+                allSolutions[row][column] = [] # blank out solutions
+    
+    # Recreate solutions at each point
+    for row in range(9):
+        for column in range(9):
+            if (testPuzzle[row][column] == 'x'):
+                allSolutions[row][column] = usableNumbers(testPuzzle,row,column)
+                if (len(usableNumbers(testPuzzle,row,column)) == 1):
+                    onePossibility += 1
+    iteration += 1
+
+for i in range(9):
+    for j in range(9):
+        print(usableNumbers(testPuzzle,i,j))
 
 tok = time.perf_counter()
 print("\n\nDONE! Solved in " + str(iteration) + " iterations.")

@@ -18,8 +18,9 @@ def checkBox(table, boxNumber):
 
     while rI < rowIndex:
         cI = columnIndex-3
-        while cI < columnIndex:  
-            sum = sum + table[rI][cI]
+        while cI < columnIndex:
+            if (table[rI][cI] != 'x'):  
+                sum = sum + table[rI][cI]
             cI = cI + 1
         rI = rI + 1
 
@@ -66,7 +67,7 @@ def missingFromColumn(table, column):
         if (table[i][column] != 'x' and table[i][column] != 'X'):
             usedNumbers.append(table[i][column])
     for i in range(9):
-        if(i+1 not in usedNumbers):
+        if i+1 not in usedNumbers:
             missingNumbers.append(i+1)
     return missingNumbers
 
@@ -119,6 +120,8 @@ def missingFromBox(table,row,column):
 
 def usableNumbers(table,row,column):
     # Combines missingFromRow and missingFromColumn to determine numbers available for box
+    if table[row][column] != 'x':
+        return []
     mN =[] # All usable numbers for this coordinate, row column and box taken into account
     mC=[] # missing numbers in column
     mR=[] # missing numbers in row
@@ -134,15 +137,6 @@ def usableNumbers(table,row,column):
         else:
             if mR[i] in mC:
                 mRC.append(mR[i])
-
-    for i in range(min(len(mRC), len(mB))):
-        if (len(mRC) < len(mB)):
-            if mRC[i] in mB:
-                mN.append(mRC[i])
-        else:
-            if mB[i] in mRC:
-                mN.append(mB[i])
-    return mN
 
     for i in range(min(len(mRC), len(mB))):
         if (len(mRC) < len(mB)):
