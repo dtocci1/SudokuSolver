@@ -146,3 +146,151 @@ def usableNumbers(table,row,column):
             if mB[i] in mRC:
                 mN.append(mB[i])
     return mN
+
+def iteratePuzzle(table, solutions, depth):
+    # Recursive function for solving the puzzle
+    # minSolution refers to minimum number of solutions for each box
+    # ie. if minSolution = 1, loop until no numbers have only one possibility
+    possibilities = 1 # default to get into while loop
+    newTable=table # table to be modified
+    oldTable=table # unmodified version of previous stack table
+    newSolutions=solutions
+    oldSolutions=solutions # unmodified version of previous stack table
+    iteration = 0
+    broken=0
+    recursion=1
+    choice = 0
+    tmpRC=[]
+    bFlag=0 #prevents an edge case
+    cFlag=0 #prevents logic issue
+    #region Iterate through cells, solving cells with only one choice. Regenerate solution after
+    while (possibilities >= 1): # While there are still solutions to iterate through (ie 1 or more cell has X possibilities)
+        print(f"Solving iteration[{iteration}] at depth[{depth}]...")
+        possibilities = 0
+        for row in range(9):
+            for column in range(9):
+                if (len(oldSolutions[row][column]) == 1 and newTable[row][column] == 'x'): # If there is a cell with X possibilities and that cell is blank
+                    newTable[row][column] = oldSolutions[row][column][0] # Plug in the "choice" into the new solution
+                    newSolutions[row][column] = [] # blank out other solutions
+        
+        # Recreate solutions at each point
+        for row in range(9):
+            for column in range(9):
+                if (newTable[row][column] == 'x'):
+                    newSolutions[row][column] = usableNumbers(newTable,row,column) # re-calculate "usable" numbers
+                    if (len(newSolutions[row][column]) == 1): # Determine if any have only one solution
+                        possibilities += 1
+                elif(newTable[row][column] != 'x'):
+                    newSolutions[row][column] = [] # ensure solutions are wiped from solved boxes
+        iteration+=1
+    #endregion
+
+    # Check if anything is unsolvable
+    for row in range(9):
+        for column in range(9):
+            if (len(usableNumbers(newTable,row,column)) == 0 and newTable[row][column] == 'x'):
+                broken=1
+                break
+        if(broken):
+            break
+    
+    
+    if (broken): # If there is any unsolvable point
+        return oldTable # go up in the stack with the old table
+
+    # Everything with one solution is solved
+    # Check if we had to go back in stack
+
+    # Guess on closest one with extra solution
+    while (recursion == 1):        
+        if (choice == 0):
+            # Determine point where choice needs to be made
+            for row in range(9):
+                for column in range(9):
+                    tmp = len(usableNumbers(newTable,row,column))
+                    if (tmp == 2 and newTable[row][column] == 'x'):
+                        bFlag = 1
+                        break
+                if (tmp == 2 and newTable[row][column] == 'x'):
+                    break
+            # Make a choice
+            if(bFlag == 1):
+                newTable[row][column] = usableNumbers(newTable,row,column)[choice]
+                print(f"Making a choice at {row,column}, picking choice {choice}, value = {newTable[row][column]}")
+                tmpRC=[row,column]
+                bFlag = 0
+                cFlag = 1
+
+            # No choice could be made
+            else:
+                cFlag = 0
+        elif ([row,column] == tmpRC): # Try another option
+            newTable = oldTable # reset table
+            newTable[row][column] = oldSolutions[row][column][choice] #pick new option
+            # regenerate solutions
+            for i in range(9):
+                for j in range(9):
+                    if (newTable[i][j] == 'x'):
+                        newSolutions[i][j] = usableNumbers(newTable,i,j) # re-calculate "usable" numbers 
+            print(f"Redoing a choice at {row,column}, picking choice {choice}, value = {newTable[row][column]}")
+            cFlag = 1
+
+        if (cFlag): #if a choice was made
+            newTable = iteratePuzzle(newTable,newSolutions,depth+1) # *** RECURSION OCCURS HERE ***
+        
+        if (newTable == oldTable and cFlag == 1):
+            tmp = len(oldSolutions[row][column])
+            if(choice+1 < tmp):
+                choice+=1
+        else:
+            # Check if puzzle is broken again
+            for row in range(9):
+                for column in range(9):
+                    if (len(usableNumbers(newTable,row,column)) == 0 and newTable[row][column] == 'x'):
+                        broken=1
+                        break
+                if(broken):
+                    break
+            if (broken):
+                return oldTable
+            else:
+                recursion=0
+
+    #region Old recursive solution
+    '''
+    # Check if we solved the puzzle
+    for i in range(9):
+        vFlag = checkBox(newTable,i+1)
+        if (vFlag):
+            break
+
+    if (vFlag): # Puzzle is not solved :(
+        # Not solved and there are no more possibilities
+        # Check there are any "impossible" points
+        for i in range(9):
+            for j in range(9):
+                if (len(newSolutions[i][j]) == 0 and newTable[i][j] == 'x'): # If there is a point not filled in with NO possibilities, break out
+                    return oldTable
+
+        # Determine where a minSolution+1 point lies and pick based on choice
+        for row in range(9):
+            for column in range(9):
+                if (len(newSolutions[row][column]) == minSolution+1):
+                    break
+            if (len(newSolutions[row][column]) == minSolution+1):
+                break
+        # Guess at this singular point
+        newTable[row][column] = newSolutions[row][column][choice]
+        # Check if any one solutions appear
+        newTable = iteratePuzzle(newTable,minSolution,choice,newSolutions,depth)
+        if (newTable == oldTable): # We reached a point where nothing is possible
+            if (choice < minSolution):
+                choice = choice + 1
+                newTable = iteratePuzzle(newTable,minSolution,choice,newSolutions,depth)
+
+        # If they don't, try a the second choice
+    '''
+    #endregion
+
+
+    return newTable

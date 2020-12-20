@@ -92,37 +92,50 @@ allSolutions = [ # Matrix of lists of all working numbers for solutions
     [[],[],[],[],[],[],[],[],[]],
     [[],[],[],[],[],[],[],[],[]]
 ]
-tik = time.perf_counter()
+#tik = time.perf_counter()
 
 for row in range(9):
     for column in range(9):
         if (testPuzzle[row][column] == 'x'):
             allSolutions[row][column] = usableNumbers(testPuzzle,row,column)
 onePossibility = 1 # Tracks cells with only one option, assumes it starts with at least one, doesn't really matter will just waste time if not possible
-iteration = 0
+
+solution = iteratePuzzle(testPuzzle,allSolutions,0)
 
 for i in range(9):
     for j in range(9):
-        if (len(usableNumbers(testPuzzle,i,j)) == 1):
+        if (solution[i][j] == 'x'):
             print(f"At {i}, {j}")
-            print(usableNumbers(testPuzzle,i,j))
+            print(usableNumbers(solution,i,j))
 
+for i in range(9):
+    print(solution[i])
+
+
+
+
+
+
+
+
+'''
 while (onePossibility >= 1):
     print("Iteration[" + str(iteration) + "]: Solving...")
-    onePossibility = 0
+    onePossibility = 0 # reset posibilities flag
+
     # Solve all boxes with only one possibility
     for row in range(9):
         for column in range(9):
             if (len(allSolutions[row][column]) == 1 and testPuzzle[row][column] == 'x'):
                 testPuzzle[row][column] = allSolutions[row][column][0] # add into test puzzle
-                allSolutions[row][column] = [] # blank out solutions
+                allSolutions[row][column] = [] # blank out solutions for this section
     
     # Recreate solutions at each point
     for row in range(9):
         for column in range(9):
             if (testPuzzle[row][column] == 'x'):
-                allSolutions[row][column] = usableNumbers(testPuzzle,row,column)
-                if (len(usableNumbers(testPuzzle,row,column)) == 1):
+                allSolutions[row][column] = usableNumbers(testPuzzle,row,column) # re-calculate "usable" numbers
+                if (len(usableNumbers(testPuzzle,row,column)) == 1): # Determine if any have only one solution
                     onePossibility += 1
 
     iteration += 1
@@ -130,7 +143,6 @@ while (onePossibility >= 1):
 # Check completion (maybe we got lucky)
 for i in range(9):
     vFlag = checkBox(testPuzzle,i+1)
-
 while (vFlag): # Continually solve until vFlag goes down
     # Guessing becomes necessary here
     print("Iteration[" + str(iteration) + "]: Solving...")
@@ -150,10 +162,9 @@ while (vFlag): # Continually solve until vFlag goes down
                 if (len(usableNumbers(testPuzzle,row,column)) == 1):
                     onePossibility += 1
     iteration += 1
-
 for i in range(9):
     for j in range(9):
-        print(usableNumbers(testPuzzle,i,j))
+        print(i,j,usableNumbers(testPuzzle,i,j))
 
 tok = time.perf_counter()
 print("\n\nDONE! Solved in " + str(iteration) + " iterations.")
@@ -161,3 +172,4 @@ print(f"Duration: {tok-tik:0.4f} seconds")
 for i in range(9):
 
     print(testPuzzle[i])
+'''
