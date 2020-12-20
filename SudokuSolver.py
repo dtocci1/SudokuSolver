@@ -58,33 +58,6 @@ for outerRow in range(len(parsedTable)): # ->[1,2,3,4,5,6,7,8,9]<-, [2,1,3,6,5,4
 #endregion
 """
 
-# Create solving algorithm
-# Premise:
-# Go box by box through the sudoku puzzle in the following order:
-# [1] [2] [3]
-# [4] [5] [6]
-# [7] [8] [9] 
-#
-# Solve the box, and save possible alternative solutions in a list
-#   Check row cells to the left for repeats
-#   If repeat:
-#       Try another solution for current box
-#       If no solutions left:
-#           Try new solution for previous box
-#   Check columns above for repeats
-#   If repeat:
-#       Try another solution for current box
-#       If no solutions left:
-#           Try new solution for previous box
-#   Move onto next box
-#   End program after last box and display solution 
-
-#TestSet=[[3,2,'x',4,5,6,7,8,9],['x',2,3,4,5,6,7,8,9],[3,2,3,4,5,6,7,8,9],[4,2,3,4,5,6,7,8,9],[5,2,3,4,5,6,7,8,9],[6,2,3,4,5,6,7,8,9],[7,2,3,4,5,6,7,8,9],[8,2,3,4,5,6,7,8,9],[9,2,3,4,5,6,7,8,9]]
-#print(checkColumn(TestSet,0))
-#testBox = [[1,'x','x'],['x',5,'x'],['x','x',3]]
-#potSolution = solveBox(testBox,1,[])
-#print(potSolution)
-
 testPuzzle = [
              [ 5,  3, 'x','x', 7, 'x','x','x','x'], 
              [ 6, 'x','x', 1,  9,  5, 'x','x','x'],
@@ -96,8 +69,6 @@ testPuzzle = [
              ['x','x','x', 4,  1,  9, 'x','x', 5],
              ['x','x','x','x', 8, 'x','x', 7,  9]
              ]
-
-testPuzzle2 = [[5, 3, 'x', 6, 7, 'x', 'x', 'x', 'x'], [6, 'x', 'x', 1, 9, 5, 'x', 'x', 'x'], ['x', 9, 8, 3, 4, 2, 'x', 6, 4], [8, 'x', 'x', 'x', 6, 6, 'x', 'x', 3], [4, 'x', 'x', 8, 3, 3, 'x', 'x', 1], [7, 2, 'x', 'x', 2, 1, 'x', 'x', 6], ['x', 6, 'x', 'x', 4, 4, 2, 8, 2], [1, 'x', 'x', 4, 1, 9, 'x', 2, 5], ['x', 'x', 'x', 'x', 8, 6, 'x', 7, 9]]
 
 # Generate solutions at each box
 '''
